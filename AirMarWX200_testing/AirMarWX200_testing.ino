@@ -1,13 +1,13 @@
 #include <TinyGPSPlus.h>
 #include <TimeLib.h>
 #include <SD.h>
-# define WxSerial Serial2
+# define WxSerial Serial5
 
 
 const byte numChars = 82; // longest possible string from Airmar NMEA 0183
 boolean newData = false;
 char receivedChars[numChars];
-char fileName[] = "windLogger.txt"; //  File Naming
+char fileName[] = "windLoggerV24_preoutsideTest2onboat.txt"; //  File Naming
 char timeStamp[20]; // time stamp for each packet
 
 const int chipSelect = BUILTIN_SDCARD; // Teensy 4.1 SD card pin
@@ -87,17 +87,31 @@ void saveAndShowNewData() {
     if (newData == true) {
         // Serial.print("This just in ... ");
         Serial.println(receivedChars);
-        // if (Serial.available() > 0) {
-        //     for (i=0; i <5; i ++)
-        //     Serial.print(receivedChars[i]);
-        //     sentenceHeader[i] = receivedChars[i];
-        // }
         
+        for (int i=0; i <4;i++){
+            // Serial.print(receivedChars[i]);
+            sentenceHeader[i] = receivedChars[i];
+        }
+        
+        // Serial.println();
+        // Serial.println(sentenceHeader);
+
 
         //open and store the data
         File sdCard = SD.open(fileName, FILE_WRITE);
         sdCard.println(receivedChars);
-        // if (sentenceHeader == 'GPGGA') {
+        if (strcmp(sentenceHeader,"GPGG")==0) {
+          Serial.println("TIMESTAMP:");
+          Serial.println(now());
+          sdCard.print("Teensy timestamp, ");
+          sdCard.print(now());
+          sdCard.println();
+
+          // sprintf(timeStamp, "Teensy Time Stamp:%04d-%02d-%02d %02d:%02d:%02d", year(), month(), day(), hour(), minute(), second());
+          // sdCard.println(timeStamp);
+
+        }
+ 
         //     timeStampPacket(sdCard);
         // }
 
@@ -109,13 +123,6 @@ void saveAndShowNewData() {
     }
 }
 
-void timeStampPacket(File df){
-    // df = SD card file instance
-    // DateTime now = timeStatus.now()
-    sprintf(timeStamp, "Teensy Time Stamp:%04d-%02d-%02d %02d:%02d:%02d", year(), month(), day(), hour(), minute(), second());
-    df.println(timeStamp);
-
-}
 
 time_t getTeensy3Time()
 {
