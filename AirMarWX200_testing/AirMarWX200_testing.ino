@@ -1,19 +1,20 @@
 #include <TinyGPSPlus.h>
 #include <TimeLib.h>
 #include <SD.h>
-# define WxSerial Serial5
+# define WxSerial Serial4
 
 
 const byte numChars = 82; // longest possible string from Airmar NMEA 0183
 boolean newData = false;
 char receivedChars[numChars];
-char fileName[] = "windLoggerV24_preoutsideTest2onboat.txt"; //  File Naming
+char fileName[] = "windLoggerV27_indoor_allnight.txt"; //  File Naming
 char timeStamp[20]; // time stamp for each packet
 
 const int chipSelect = BUILTIN_SDCARD; // Teensy 4.1 SD card pin
 
 
 void setup() {
+
   // put your setup code here, to run once:
   Serial.begin(9600); // this doesnt matter as much
   WxSerial.begin(4800); // DOES not work at any other baud rate
@@ -43,6 +44,7 @@ void setup() {
 
 
 void loop() {
+  // Serial.println("hi");
   recvWithStartEndMarkers(); // read incoming serial data byte by byte using NMEA parsers
   saveAndShowNewData();
   
